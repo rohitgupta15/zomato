@@ -1,0 +1,63 @@
+:root {
+  --fb-orange: #f97316;
+  --fb-dark: #111827;
+  --fb-light: #fff7ed;
+}
+
+#header {
+  background: linear-gradient(90deg, #1f2937 0%, #111827 100%);
+  border-bottom: 3px solid var(--fb-orange);
+}
+
+#branding #site-name {
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.brand-pill {
+  background: var(--fb-orange);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+div.breadcrumbs {
+  background: var(--fb-light);
+  border-bottom: 1px solid #fed7aa;
+}
+
+button,
+input[type="submit"],
+.button,
+a.button {
+  background: var(--fb-orange);
+  border-color: var(--fb-orange);
+  color: #fff;
+  border-radius: 8px;
+}
+
+button:hover,
+input[type="submit"]:hover,
+.button:hover,
+a.button:hover {
+  background: #ea580c;
+  border-color: #ea580c;
+}
+
+.module h2,
+.module caption,
+.inline-group h2 {
+  background: #fff;
+  color: var(--fb-dark);
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.module {
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  overflow: hidden;
+}

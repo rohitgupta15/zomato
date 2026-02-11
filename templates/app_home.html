@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% load cart_extras %}
+
+{% block title %}User App · FoodBooking{% endblock %}
+
+{% block content %}
+  <section class="section">
+    <h2>Find your next meal</h2>
+    <div class="cart-indicator">
+      Items in cart: <strong id="cart-count">{{ cart_count|default:0 }}</strong>
+    </div>
+    <div id="eta-box" class="eta-box" data-restaurant="{{ selected_restaurant }}">
+      <span class="eta-label">Estimated delivery:</span>
+      <span id="eta-text" class="eta-text">Select a restaurant to see ETA.</span>
+      <span class="eta-note">Powered by Google</span>
+    </div>
+    <div class="restaurant-strip">
+      <a class="restaurant-pill {% if not selected_restaurant %}active{% endif %}" href="{% url 'app_home' %}">All</a>
+      {% for restaurant in restaurants %}
+        <a
+          class="restaurant-pill {% if selected_restaurant == restaurant.id|stringformat:'s' %}active{% endif %}"
+          href="?restaurant={{ restaurant.id }}"
+        >
+          {{ restaurant.name }}
+        </a>
+      {% endfor %}
+    </div>
+    <form class="search-bar" method="get">
+      <input
+        type="text"
+        name="q"
+        placeholder="Search for restaurants or dishes"
+        value="{{ query }}"
+      />
+      {% if selected_restaurant %}
+        <input type="hidden" name="restaurant" value="{{ selected_restaurant }}" />
+      {% endif %}
+      <button class="btn primary" type="submit">Search</button>
+    </form>
+    <form class="filter-bar" method="get">
+      <input type="hidden" name="q" value="{{ query }}" />
+      {% if selected_restaurant %}
+        <input type="hidden" name="restaurant" value="{{ selected_restaurant }}" />
+      {% endif %}
+      <select name="veg">
+        <option value="">All</option>
+        <option value="veg" {% if filters.veg == "veg" %}selected{% endif %}>Veg</option>
+        <option value="nonveg" {% if filters.veg == "nonveg" %}selected{% endif %}>Non-Veg</option>
+      </select>
+      <select name="min_rating">
+        <option value="">Any Rating</option>
+        <option value="4.5" {% if filters.min_rating == "4.5" %}selected{% endif %}>4.5+</option>
+        <option value="4.0" {% if filters.min_rating == "4.0" %}selected{% endif %}>4.0+</option>
+        <option value="3.5" {% if filters.min_rating == "3.5" %}selected{% endif %}>3.5+</option>
+      </select>
+      <select name="price">
+        <option value="">Any Price</option>
+        <option value="low" {% if filters.price == "low" %}selected{% endif %}>Up to 200</option>
+        <option value="mid" {% if filters.price == "mid" %}selected{% endif %}>200 - 400</option>
+        <option value="high" {% if filters.price == "high" %}selected{% endif %}>400+</option>
+      </select>
+      <select name="sort">
+        <option value="">Sort</option>
+        <option value="rating" {% if filters.sort == "rating" %}selected{% endif %}>Rating</option>
+        <option value="price_asc" {% if filters.sort == "price_asc" %}selected{% endif %}>Price Low to High</option>
+        <option value="price_desc" {% if filters.sort == "price_desc" %}selected{% endif %}>Price High to Low</option>
+      </select>
+      <button class="btn ghost" type="submit">Apply</button>
+    </form>
+    {% if selected_restaurant and grouped %}
+      {% for group in grouped %}
+        <div class="category-section">
+          <h3 class="category-title">
+            {% if group.category %}{{ group.category.name }}{% else %}Other{% endif %}
+          </h3>
+          <div class="grid menu-grid">
+            {% for dish in group.dishes %}
+              <div class="tile dish-card" data-dish-id="{{ dish.id }}">
+          {% if dish.image %}
+            <img class="dish-image" src="{{ dish.image.url }}" alt="{{ dish.name }}" />
+          {% elif dish.restaurant.image %}
+            <img class="dish-image" src="{{ dish.restaurant.image.url }}" alt="{{ dish.restaurant.name }}" />
+          {% endif %}
+          {% if dish.images.all %}
+            <div class="dish-thumbs">
+              {% for img in dish.images.all %}
+                <img src="{{ img.image.url }}" alt="{{ dish.name }} extra" />
+              {% endfor %}
+            </div>
+          {% endif %}
+          <div class="dish-head">
+            <h3>{{ dish.name }}</h3>
+            <span class="price">₹{{ dish.price }}</span>
+          </div>
+          <div class="dish-meta">
+            <span class="tag">{{ dish.restaurant.name }}</span>
+            <span class="tag {% if dish.is_veg %}veg{% else %}nonveg{% endif %}">
+              {% if dish.is_veg %}Veg{% else %}Non‑Veg{% endif %}
+            </span>
+            <span class="tag rating-tag">
+              ★ {{ dish.rating }}
+            </span>
+          </div>
+          {% with qty=cart|get_item:dish.id %}
+            <div class="cart-controls" data-controls="true">
+              <form class="qty-form" method="post" action="{% url 'update_cart_json' dish.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="qty" value="{% if qty %}{{ qty|add:"-1" }}{% else %}0{% endif %}" />
+                <button class="qty-btn" type="submit">-</button>
+              </form>
+              <div class="cart-pill">In cart: {{ qty|default:0 }}</div>
+              <form class="qty-form" method="post" action="{% url 'add_to_cart_json' dish.id %}">
+                {% csrf_token %}
+                <button class="qty-btn" type="submit">+</button>
+              </form>
+            </div>
+          {% endwith %}
+          <p class="muted description">
+            {{ dish.description|default:"Chef‑crafted, freshly prepared, and packed hot for delivery." }}
+          </p>
+              <form class="add-form" method="post" action="{% url 'add_to_cart_json' dish.id %}">
+                {% csrf_token %}
+                <button class="btn ghost" type="submit">
+                  {% if cart|get_item:dish.id %}Add More{% else %}Add to Cart{% endif %}
+                </button>
+              </form>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="grid menu-grid">
+        {% for dish in dishes %}
+          <div class="tile dish-card" data-dish-id="{{ dish.id }}">
+            {% if dish.image %}
+              <img class="dish-image" src="{{ dish.image.url }}" alt="{{ dish.name }}" />
+            {% elif dish.restaurant.image %}
+              <img class="dish-image" src="{{ dish.restaurant.image.url }}" alt="{{ dish.restaurant.name }}" />
+            {% endif %}
+            {% if dish.images.all %}
+              <div class="dish-thumbs">
+                {% for img in dish.images.all %}
+                  <img src="{{ img.image.url }}" alt="{{ dish.name }} extra" />
+                {% endfor %}
+              </div>
+            {% endif %}
+            <div class="dish-head">
+              <h3>{{ dish.name }}</h3>
+              <span class="price">₹{{ dish.price }}</span>
+            </div>
+            <div class="dish-meta">
+              <span class="tag">{{ dish.restaurant.name }}</span>
+              <span class="tag {% if dish.is_veg %}veg{% else %}nonveg{% endif %}">
+                {% if dish.is_veg %}Veg{% else %}Non‑Veg{% endif %}
+              </span>
+              <span class="tag rating-tag">
+                ★ {{ dish.rating }}
+              </span>
+            </div>
+            {% with qty=cart|get_item:dish.id %}
+              <div class="cart-controls" data-controls="true">
+                <form class="qty-form" method="post" action="{% url 'update_cart_json' dish.id %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="qty" value="{% if qty %}{{ qty|add:"-1" }}{% else %}0{% endif %}" />
+                  <button class="qty-btn" type="submit">-</button>
+                </form>
+                <div class="cart-pill">In cart: {{ qty|default:0 }}</div>
+                <form class="qty-form" method="post" action="{% url 'add_to_cart_json' dish.id %}">
+                  {% csrf_token %}
+                  <button class="qty-btn" type="submit">+</button>
+                </form>
+              </div>
+            {% endwith %}
+            <p class="muted description">
+              {{ dish.description|default:"Chef‑crafted, freshly prepared, and packed hot for delivery." }}
+            </p>
+            <form class="add-form" method="post" action="{% url 'add_to_cart_json' dish.id %}">
+              {% csrf_token %}
+              <button class="btn ghost" type="submit">
+                {% if cart|get_item:dish.id %}Add More{% else %}Add to Cart{% endif %}
+              </button>
+            </form>
+          </div>
+        {% empty %}
+          <p>No dishes found. Try another search.</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </section>
+
+  <script>
+    (function () {
+      const csrfToken = document.querySelector("input[name=csrfmiddlewaretoken]")?.value;
+      const cartCount = document.getElementById("cart-count");
+      const etaBox = document.getElementById("eta-box");
+      const etaText = document.getElementById("eta-text");
+
+      function highlightCount() {
+        cartCount.classList.remove("count-pulse");
+        void cartCount.offsetWidth;
+        cartCount.classList.add("count-pulse");
+      }
+
+      function updateDishCard(dishId, qty) {
+        const card = document.querySelector(`[data-dish-id="${dishId}"]`);
+        if (!card) return;
+        let controls = card.querySelector('[data-controls="true"]');
+        if (!controls) {
+          const controlsWrap = document.createElement("div");
+          controlsWrap.className = "cart-controls";
+          controlsWrap.setAttribute("data-controls", "true");
+          controlsWrap.innerHTML = `
+            <form class="qty-form" method="post" action="/cart/update/${dishId}/json/">
+              <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+              <input type="hidden" name="qty" value="0" />
+              <button class="qty-btn" type="submit">-</button>
+            </form>
+            <div class="cart-pill">In cart: 0</div>
+            <form class="qty-form" method="post" action="/cart/add/${dishId}/json/">
+              <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+              <button class="qty-btn" type="submit">+</button>
+            </form>
+          `;
+          const rating = card.querySelector(".rating");
+          rating.insertAdjacentElement("afterend", controlsWrap);
+          controls = controlsWrap;
+        }
+        controls.querySelector(".cart-pill").textContent = `In cart: ${qty}`;
+        const minusForm = controls.querySelector("form");
+        minusForm.querySelector('input[name="qty"]').value = Math.max(qty - 1, 0);
+        const addBtn = card.querySelector(".add-form button");
+        if (addBtn) {
+          addBtn.textContent = qty > 0 ? "Add More" : "Add to Cart";
+        }
+      }
+
+      async function handleSubmit(event) {
+        const form = event.target.closest("form");
+        if (!form) return;
+        if (!form.classList.contains("add-form") && !form.classList.contains("qty-form")) return;
+        event.preventDefault();
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: {"X-Requested-With": "XMLHttpRequest"},
+        });
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
+          alert(data.error || "Unable to update cart.");
+          return;
+        }
+        const data = await response.json();
+        if (cartCount) {
+          cartCount.textContent = data.cart_count;
+          highlightCount();
+        }
+        updateDishCard(data.dish_id, data.qty);
+      }
+
+      document.addEventListener("submit", handleSubmit);
+
+      async function fetchEta(lat, lng, restaurantId) {
+        if (!restaurantId) return;
+        const url = `/eta/?restaurant=${restaurantId}&lat=${lat}&lng=${lng}`;
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.duration_text && etaText) {
+          etaText.textContent = data.duration_text;
+        }
+      }
+
+      function initEta() {
+        const restaurantId = etaBox?.dataset?.restaurant;
+        if (!restaurantId) return;
+        if (!navigator.geolocation) {
+          if (etaText) etaText.textContent = "Location not supported.";
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            fetchEta(pos.coords.latitude, pos.coords.longitude, restaurantId);
+          },
+          () => {
+            if (etaText) etaText.textContent = "Allow location to see ETA.";
+          },
+          { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
+        );
+      }
+
+      initEta();
+    })();
+  </script>
+{% endblock %}

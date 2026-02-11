@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load socialaccount %}
+
+{% block title %}Register - FoodBooking{% endblock %}
+
+{% block content %}
+  <section class="section">
+    <h2>Create Account</h2>
+    <p class="lead">Register to place orders and view invoices.</p>
+    <form class="auth-card" method="post">
+      {% csrf_token %}
+      <label class="field">
+        <span>Username</span>
+        <input type="text" name="username" required />
+      </label>
+      <label class="field">
+        <span>Email</span>
+        <input type="email" name="email" />
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" name="password" required />
+      </label>
+      <label class="field">
+        <span>Confirm Password</span>
+        <input type="password" name="confirm" required />
+      </label>
+      <button class="btn primary" type="submit">Register</button>
+    </form>
+    {% get_providers as socialaccount_providers %}
+    {% for provider in socialaccount_providers %}
+      {% if provider.id == "google" %}
+        <div class="auth-divider"><span>or</span></div>
+        <div class="social-actions">
+          <a class="btn google" href="{% provider_login_url 'google' %}">Sign up with Google</a>
+        </div>
+      {% endif %}
+    {% endfor %}
+    <p class="muted">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+  </section>
+{% endblock %}

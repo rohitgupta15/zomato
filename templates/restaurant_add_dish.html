@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Add Dishes - FoodBooking{% endblock %}
+
+{% block content %}
+  <section class="section">
+    <h2>Add Dishes</h2>
+    <p class="lead">Add multiple dishes for {{ profile.restaurant.name }} in one go.</p>
+    <form class="auth-card" method="post" enctype="multipart/form-data" id="dish-formset">
+      {% csrf_token %}
+      {{ formset.management_form }}
+      <div id="formset-body">
+        {% for form in formset %}
+          <div class="dish-form">
+            <div class="grid">
+              <label class="field">
+                <span>Name</span>
+                {{ form.name }}
+              </label>
+              <label class="field">
+                <span>Price</span>
+                {{ form.price }}
+              </label>
+              <label class="field">
+                <span>Rating</span>
+                {{ form.rating }}
+              </label>
+              <label class="field">
+                <span>Category</span>
+                {{ form.category }}
+              </label>
+              <label class="field">
+                <span>Image</span>
+                {{ form.image }}
+              </label>
+              <label class="field">
+                <span>Description</span>
+                {{ form.description }}
+              </label>
+              <label class="field">
+                <span>{{ form.is_veg }} Veg</span>
+              </label>
+              <label class="field">
+                <span>{{ form.is_available }} Available</span>
+              </label>
+            </div>
+            <hr />
+          </div>
+        {% endfor %}
+      </div>
+      <div class="action-row">
+        <button class="btn ghost" type="button" id="add-more">Add Another Dish</button>
+        <button class="btn primary" type="submit">Save All</button>
+      </div>
+    </form>
+  </section>
+
+  <template id="empty-form">
+    <div class="dish-form">
+      <div class="grid">
+        <label class="field">
+          <span>Name</span>
+          {{ formset.empty_form.name }}
+        </label>
+        <label class="field">
+          <span>Price</span>
+          {{ formset.empty_form.price }}
+        </label>
+        <label class="field">
+          <span>Rating</span>
+          {{ formset.empty_form.rating }}
+        </label>
+        <label class="field">
+          <span>Category</span>
+          {{ formset.empty_form.category }}
+        </label>
+        <label class="field">
+          <span>Image</span>
+          {{ formset.empty_form.image }}
+        </label>
+        <label class="field">
+          <span>Description</span>
+          {{ formset.empty_form.description }}
+        </label>
+        <label class="field">
+          <span>{{ formset.empty_form.is_veg }} Veg</span>
+        </label>
+        <label class="field">
+          <span>{{ formset.empty_form.is_available }} Available</span>
+        </label>
+      </div>
+      <hr />
+    </div>
+  </template>
+
+  <script>
+    (function () {
+      const addBtn = document.getElementById("add-more");
+      const body = document.getElementById("formset-body");
+      const totalInput = document.getElementById("id_form-TOTAL_FORMS");
+      const template = document.getElementById("empty-form");
+
+      addBtn.addEventListener("click", () => {
+        const index = parseInt(totalInput.value, 10);
+        const html = template.innerHTML.replace(/__prefix__/g, index);
+        const wrapper = document.createElement("div");
+        wrapper.innerHTML = html;
+        body.appendChild(wrapper.firstElementChild);
+        totalInput.value = index + 1;
+      });
+    })();
+  </script>
+{% endblock %}

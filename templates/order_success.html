@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmed · FoodBooking{% endblock %}
+
+{% block content %}
+  <section class="section cta">
+    <h2>Order Confirmed</h2>
+    <p>Thanks for your order. Your order ID is <strong>#{{ order_id }}</strong>.</p>
+    <a class="btn primary" href="{% url 'app_home' %}">Order More</a>
+  </section>
+{% endblock %}

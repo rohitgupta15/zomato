@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">FoodBooking</string>
+    <string name="web_url">http://10.0.2.2:8000/</string>
+    <string name="offline_title">You are offline</string>
+    <string name="offline_message">Please check your internet connection.</string>
+    <string name="offline_retry">Retry</string>
+    <string name="offline_settings">Open Network Settings</string>
+</resources>

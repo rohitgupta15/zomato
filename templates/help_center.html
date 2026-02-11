@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Help Center - FoodBooking{% endblock %}
+
+{% block content %}
+  <section class="section">
+    <h2>Help Center</h2>
+    <p class="lead">Raise an issue and track your requests.</p>
+
+    <form class="auth-card" method="post">
+      {% csrf_token %}
+      <label class="field">
+        <span>Subject</span>
+        <input type="text" name="subject" required />
+      </label>
+      <label class="field">
+        <span>Message</span>
+        <textarea name="message" rows="4" required></textarea>
+      </label>
+      <button class="btn primary" type="submit">Submit Issue</button>
+    </form>
+
+    <h3 style="margin-top: 32px;">Your Tickets</h3>
+    {% if tickets %}
+      <div class="cart-list">
+        {% for ticket in tickets %}
+          <div class="tile">
+            <strong>#{{ ticket.id }} — {{ ticket.subject }}</strong>
+            <div class="muted">{{ ticket.created_at|date:"M d, Y H:i" }}</div>
+            <div class="tag rating-tag">{{ ticket.status|title }}</div>
+            <p class="muted">{{ ticket.message }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>You haven’t raised any issues yet.</p>
+    {% endif %}
+  </section>
+{% endblock %}

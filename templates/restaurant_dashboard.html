@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Restaurant Dashboard - FoodBooking{% endblock %}
+
+{% block content %}
+  <section class="section">
+    <h2>{{ profile.restaurant.name }} Dashboard</h2>
+    <p class="lead">Manage dishes for your restaurant.</p>
+    <div class="grid">
+      <div class="tile">
+        <h3>Today’s Orders</h3>
+        <div class="stat-number">{{ today_orders }}</div>
+        <div class="muted">Orders today</div>
+      </div>
+      <div class="tile">
+        <h3>Revenue</h3>
+        <div class="stat-number">₹{{ revenue|floatformat:2 }}</div>
+        <div class="muted">Today’s sales</div>
+      </div>
+      <div class="tile">
+        <h3>Ratings</h3>
+        <div class="stat-number">{{ avg_rating }}</div>
+        <div class="muted">Avg dish rating</div>
+      </div>
+      <div class="tile">
+        <h3>Popular Items</h3>
+        {% if popular_items %}
+          <ul class="order-items">
+            {% for item in popular_items %}
+              <li>{{ item.dish__name }} × {{ item.qty }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="muted">No orders yet</div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="action-row">
+      <a class="btn primary" href="{% url 'restaurant_add_dish' %}">Add Dish</a>
+      <a class="btn ghost" href="{% url 'app_home' %}">View User App</a>
+    </div>
+    <div class="grid menu-grid">
+      {% for dish in dishes %}
+        <div class="tile dish-card">
+          {% if dish.image %}
+            <img class="dish-image" src="{{ dish.image.url }}" alt="{{ dish.name }}" />
+          {% endif %}
+          <div class="dish-head">
+            <h3>{{ dish.name }}</h3>
+            <span class="price">₹{{ dish.price }}</span>
+          </div>
+          <div class="rating">
+            <span class="star">★</span>
+            <span>{{ dish.rating }}</span>
+          </div>
+          <p class="muted">{{ dish.description|default:"No description" }}</p>
+        </div>
+      {% empty %}
+        <p>No dishes yet. Add your first dish.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

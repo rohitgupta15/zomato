@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}FoodBooking - Online Food Delivery{% endblock %}
+
+{% block content %}
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Django Web Application Starter</p>
+      <h1>Online food booking for customers, restaurants, and riders.</h1>
+      <p class="lead">
+        A clean, scalable foundation built with Django. Perfect for demos, client
+        presentations, or starting your MVP.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="{% url 'app_home' %}">Explore Features</a>
+        <a class="btn ghost" href="{% url 'login' %}">User Login</a>
+        <a class="btn ghost" href="/admin/">Admin Login</a>
+        <a class="btn ghost" href="{% url 'restaurant_login' %}">Restaurant Login</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="stat-number">4</div>
+          <div class="stat-label">Core Panels</div>
+        </div>
+        <div>
+          <div class="stat-number">30+</div>
+          <div class="stat-label">Key Screens</div>
+        </div>
+        <div>
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Django Ready</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="card-header">Live Order Snapshot</div>
+      <div class="card-body">
+        <div class="order-line">
+          <span>Spicy Veg Biryani</span>
+          <span class="pill">Preparing</span>
+        </div>
+        <div class="order-line">
+          <span>Cheese Burst Pizza</span>
+          <span class="pill">Picked Up</span>
+        </div>
+        <div class="order-line">
+          <span>Choco Lava Cake</span>
+          <span class="pill">Delivered</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="section">
+    <h2>Core Modules</h2>
+    <div class="grid">
+      <div class="tile">
+        <h3>User App</h3>
+        <p>Search, browse, order, pay, and track deliveries in one smooth flow.</p>
+      </div>
+      <div class="tile">
+        <h3>Restaurant Panel</h3>
+        <p>Manage menus, accept orders, and monitor performance in real time.</p>
+      </div>
+      <div class="tile">
+        <h3>Delivery Partner</h3>
+        <p>Optimized pickup and drop with status updates and earnings tracking.</p>
+      </div>
+      <div class="tile">
+        <h3>Admin Panel</h3>
+        <p>Control users, restaurants, support tickets, and marketing content.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="flows" class="section alt">
+    <h2>Fast MVP Flow</h2>
+    <div class="timeline">
+      <div>
+        <span class="timeline-step">01</span>
+        <h4>Onboarding</h4>
+        <p>OTP login, location capture, user profiles.</p>
+      </div>
+      <div>
+        <span class="timeline-step">02</span>
+        <h4>Ordering</h4>
+        <p>Restaurant listing, menu, cart, and checkout.</p>
+      </div>
+      <div>
+        <span class="timeline-step">03</span>
+        <h4>Delivery</h4>
+        <p>Assignment, pickup, live tracking, and ratings.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="cta" class="section cta">
+    <h2>Ready to build with Django?</h2>
+    <p>Use this template to pitch, prototype, or start development.</p>
+    <button class="btn primary">Start Development</button>
+  </section>
+{% endblock %}
